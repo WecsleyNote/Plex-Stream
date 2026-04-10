@@ -1,15 +1,13 @@
 require('dotenv').config();
 
 const express = require('express');
-const path = require('path');
 const plexClient = require('./plex');
+// HTML embutido diretamente no bundle — sem dependência de pasta public/
+const CONFIG_HTML = require('./html');
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve arquivos estáticos (página de configuração)
-app.use(express.static(path.join(__dirname, 'public')));
 
 // ── CORS para o Stremio ───────────────────────────────────────────────────────
 app.use((req, res, next) => {
@@ -20,7 +18,8 @@ app.use((req, res, next) => {
 
 // ── Página de configuração ────────────────────────────────────────────────────
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(CONFIG_HTML);
 });
 
 // ── API: testa conexão com Plex e retorna bibliotecas ─────────────────────────
